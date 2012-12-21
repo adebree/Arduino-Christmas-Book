@@ -56,6 +56,8 @@ int randomStatesCount = 5;
 int curFase = 0;
 long lastFaseChange = 0;
 
+// Setup all the led configurations, and insert the fases into the fase configuration
+//
 void setup()  { 
   Serial.begin(9600);
   
@@ -103,21 +105,29 @@ void setup()  {
   }
 } 
 
+// Looperdeloop!
+//
 void loop()  { 
   unsigned long currentMillis = millis();
   
+  // Is it time to change to the next fase? The current fase has a duration configured
+  //
   if ( currentMillis - lastFaseChange > fases[ curFase ].duration ) {
     curFase++;
     
+    // Wrap back to fase 0 when we are at the end
+    //
     if ( curFase + 1 > FASE_COUNT ) {
       curFase = 0;
     }
     
+    // Setup the next fase
+    //
     FASE *fase = &fases[ curFase ];
     
     Serial.print( "Fase type " );
     Serial.println( fase->type );
-    
+       
     switch ( fase->type ) {
       case FASE_ALL_FADE_SLOW:
         for ( int i = 0; i < LED_COUNT; i++ ) {
@@ -197,6 +207,8 @@ void loop()  {
     lastFaseChange = currentMillis;
   }
   
+  // Is it time for the next 'animation frame'?
+  //
   if ( currentMillis - previousMillis > interval ) {
     previousMillis = currentMillis;
     
@@ -231,7 +243,6 @@ void loop()  {
         break;        
      
         case STATE_HEARTBEAT:
-
           
           if ( diff < 100 ) {
             cur = 255;
